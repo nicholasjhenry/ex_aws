@@ -2,7 +2,6 @@ defmodule ExAws.Auth do
   import ExAws.Auth.Utils
 
   alias ExAws.Auth.Credentials
-  alias ExAws.Auth.Signatures
   alias ExAws.Request.Url
 
   @moduledoc false
@@ -46,7 +45,8 @@ defmodule ExAws.Auth do
       headers =
         [
           {"host", URI.parse(url).authority},
-          {"x-amz-date", amz_date(datetime)}
+          {"x-amz-date", amz_date(datetime)},
+          {"x-amz-region-set", config.region}
           | headers
         ]
         |> handle_temp_credentials(config)
@@ -136,7 +136,7 @@ defmodule ExAws.Auth do
     signature = signature(http_method, url, query, headers, body, service, datetime, config)
 
     [
-      "AWS4-HMAC-SHA256 Credential=",
+      "AWS4-ECDSA-P256-SHA256 Credential=",
       Credentials.generate_credential_v4(service, config, datetime),
       ",",
       "SignedHeaders=",
@@ -160,7 +160,14 @@ defmodule ExAws.Auth do
     path = url |> Url.get_path(service) |> Url.uri_encode()
     request = build_canonical_request(http_method, path, query, headers, body)
     string_to_sign = string_to_sign(request, service, datetime, config)
-    Signatures.generate_signature_v4(service, config, datetime, string_to_sign)
+
+    {:ok, private_key} =
+      :aws_sigv4a_credentials.derive(
+        {:credentials, config.access_key_id, config.secret_access_key, ""}
+      )
+
+    :crypto.sign(:ecdsa, :sha256, string_to_sign, [private_key, :secp256r1])
+    |> :aws_signature_utils.base16()
   end
 
   def build_canonical_request(http_method, path, query, headers, body) do
@@ -208,7 +215,7 @@ defmodule ExAws.Auth do
     request = hash_sha256(request)
 
     """
-    AWS4-HMAC-SHA256
+    AWS4-ECDSA-P256-SHA256
     #{amz_date(datetime)}
     #{Credentials.generate_credential_scope_v4(service, config, datetime)}
     #{request}
@@ -278,11 +285,12 @@ defmodule ExAws.Auth do
 
   defp build_amz_query_params(service, datetime, config, expires, signed_headers) do
     [
-      {"X-Amz-Algorithm", "AWS4-HMAC-SHA256"},
+      {"X-Amz-Algorithm", "AWS4-ECDSA-P256-SHA256"},
       {"X-Amz-Credential", Credentials.generate_credential_v4(service, config, datetime)},
       {"X-Amz-Date", amz_date(datetime)},
       {"X-Amz-Expires", expires},
-      {"X-Amz-SignedHeaders", signed_headers_value(signed_headers)}
+      {"X-Amz-SignedHeaders", signed_headers_value(signed_headers)},
+      {"X-Amz-Region-Set", config.region}
     ] ++
       if config[:security_token] do
         [{"X-Amz-Security-Token", config[:security_token]}]

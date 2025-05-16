@@ -1,4 +1,5 @@
 %{
+  "aws_signature": {:hex, :aws_signature, "0.4.0", "0dfc06d47f204ec13873d8f8fe6df38f3b0aa9ffdfd5764d66999e09c73a5eeb", [:rebar3], [], "hexpm", "1e02cc39234e84a083570e0a437ba301792f58928b677e8fd01a44ae8d5c6ee8"},
   "bypass": {:hex, :bypass, "2.1.0", "909782781bf8e20ee86a9cabde36b259d44af8b9f38756173e8f5e2e1fabb9b1", [:mix], [{:plug, "~> 1.7", [hex: :plug, repo: "hexpm", optional: false]}, {:plug_cowboy, "~> 2.0", [hex: :plug_cowboy, repo: "hexpm", optional: false]}, {:ranch, "~> 1.3", [hex: :ranch, repo: "hexpm", optional: false]}], "hexpm", "d9b5df8fa5b7a6efa08384e9bbecfe4ce61c77d28a4282f79e02f1ef78d96b80"},
   "castore": {:hex, :castore, "1.0.8", "dedcf20ea746694647f883590b82d9e96014057aff1d44d03ec90f36a5c0dc6e", [:mix], [], "hexpm", "0b2b66d2ee742cb1d9cb8c8be3b43c3a70ee8651f37b75a8b982e036752983f1"},
   "certifi": {:hex, :certifi, "2.14.0", "ed3bef654e69cde5e6c022df8070a579a79e8ba2368a00acf3d75b82d9aceeed", [:rebar3], [], "hexpm", "ea59d87ef89da429b8e905264fdec3419f84f2215bb3d81e07a18aac919026c3"},

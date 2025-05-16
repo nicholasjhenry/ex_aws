@@ -44,6 +44,7 @@ defmodule ExAws.Mixfile do
 
   defp deps() do
     [
+      {:aws_signature, "~> 0.4.0"},
       {:telemetry, "~> 0.4.3 or ~> 1.0"},
       {:mime, "~> 1.2 or ~> 2.0"},
       {:bypass, "~> 2.1", only: :test},

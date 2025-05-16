@@ -8,7 +8,7 @@ defmodule ExAws.Auth.Credentials do
     "#{config[:access_key_id]}/#{scope}"
   end
 
-  def generate_credential_scope_v4(service, config, datetime) do
-    "#{date(datetime)}/#{config[:region]}/#{service}/aws4_request"
+  def generate_credential_scope_v4(service, _config, datetime) do
+    "#{date(datetime)}/#{service}/aws4_request"
   end
 end
